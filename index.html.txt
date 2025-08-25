@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Birthday Song Request</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      width: 100%;
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #2c2c2c, #1a1a1a);
+      background-attachment: fixed;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      overflow-x: hidden;
+      overflow-y: auto;
+      color: white;
+    }
+
+    .container {
+      display: flex;
+      gap: 40px;
+      padding: 40px;
+      width: 100%;
+      max-width: 1200px;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+
+    .form-card, .preview-card {
+      background: rgba(0, 0, 0, 0.75);
+      padding: 2rem;
+      border-radius: 15px;
+      width: 50%;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      border: none;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      background-color: #333;
+      color: white;
+      box-sizing: border-box;
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: #aaa;
+    }
+
+    textarea {
+      height: 80px;
+      resize: vertical;
+    }
+
+    .preview-card h3 {
+      margin-top: 1rem;
+      border-bottom: 1px solid #444;
+      padding-bottom: 5px;
+    }
+
+    .preview-card p {
+      margin: 8px 0;
+      font-size: 0.95rem;
+    }
+
+    button {
+      background-color: #ff0077;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background 0.3s ease;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #e6006b;
+    }
+
+    button:disabled {
+      background-color: #666;
+      cursor: not-allowed;
+    }
+
+    #song-output {
+      margin-top: 20px;
+      font-style: italic;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .success-message {
+      background-color: #28a745;
+      color: white;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 15px;
+      display: none;
+    }
+
+    .error-message {
+      background-color: #dc3545;
+      color: white;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 15px;
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      html, body {
+        overflow: auto; /* Allow scrolling on mobile */
+      }
+      
+      .container {
+        flex-direction: column;
+        gap: 20px;
+        padding: 15px;
+        align-items: stretch;
+      }
+      
+      .form-card, .preview-card {
+        width: 100%;
+        padding: 1.5rem;
+      }
+      
+      h2 {
+        font-size: 1.4rem;
+      }
+      
+      h3 {
+        font-size: 1.1rem;
+        margin-top: 1.5rem;
+      }
+      
+      input, textarea {
+        padding: 12px;
+        font-size: 16px; /* Prevents zoom on iOS */
+      }
+      
+      button {
+        padding: 15px 20px;
+        font-size: 1.1rem;
+        margin-top: 25px;
+      }
+      
+      .preview-card {
+        position: sticky;
+        top: 10px;
+        max-height: 70vh;
+        overflow-y: auto;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .container {
+        padding: 10px;
+        gap: 15px;
+      }
+      
+      .form-card, .preview-card {
+        padding: 1.2rem;
+      }
+      
+      h2 {
+        font-size: 1.2rem;
+      }
+      
+      input, textarea {
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Form -->
+    <div class="form-card">
+      <h2>🎵 Your Custom Birthday Song Request</h2>
+      <p>Share a few details and we'll turn your favourite person's story into music they'll replay all year.</p>
+      
+      <h3>📧 Your Contact Details</h3>
+      <label>Your email address *</label>
+      <input type="email" id="customer-email" placeholder="your@email.com" required>
+
+      <label>Your name</label>
+      <input type="text" id="customer-name" placeholder="Your name">
+
+      <h3>🎯 About the Birthday Star</h3>
+      <label>Recipient's name *</label>
+      <input type="text" id="name" placeholder="Enter name" required>
+
+      <label>Recipient's age (optional)</label>
+      <input type="number" id="age" placeholder="Enter age">
+
+      <label>Pronouns</label>
+      <input type="text" id="pronouns" placeholder="he/she/they or custom">
+
+      <h3>🌟 Capture Their Personality</h3>
+      <label>3–5 traits or hobbies</label>
+      <input type="text" id="traits" placeholder="e.g., loves hiking, baking, jazz">
+
+      <label>Preferred genre or style</label>
+      <input type="text" id="genre" placeholder="e.g., Pop, Reggae, HipHop, Rock, Jazz">
+
+      <label>Special requests or additional details</label>
+      <textarea id="special-requests" placeholder="Any specific lyrics, memories, or themes you'd like included?"></textarea>
+
+      <label>Deadline (optional)</label>
+      <input type="date" id="deadline">
+
+      <button onclick="generateSong()" id="generate-btn">🎤 Generate Song</button>
+      
+      <div id="success-msg" class="success-message"></div>
+      <div id="error-msg" class="error-message"></div>
+    </div>
+
+    <!-- Live Preview -->
+    <div class="preview-card">
+      <h2>🎧 Live Preview</h2>
+      <h3>Customer Details</h3>
+      <p><strong>Customer Email:</strong> <span id="preview-customer-email">—</span></p>
+      <p><strong>Customer Name:</strong> <span id="preview-customer-name">—</span></p>
+
+      <h3>About the Birthday Star</h3>
+      <p><strong>Name:</strong> <span id="preview-name">—</span></p>
+      <p><strong>Age:</strong> <span id="preview-age">—</span></p>
+      <p><strong>Pronouns:</strong> <span id="preview-pronouns">—</span></p>
+
+      <h3>Personality & Style</h3>
+      <p><strong>Traits:</strong> <span id="preview-traits">—</span></p>
+      <p><strong>Genre:</strong> <span id="preview-genre">—</span></p>
+      <p><strong>Special Requests:</strong> <span id="preview-special-requests">—</span></p>
+      <p><strong>Deadline:</strong> <span id="preview-deadline">—</span></p>
+
+      <div id="song-output"></div>
+    </div>
+  </div>
+
+  <!-- EmailJS SDK -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  
+  <script>
+    // Initialize EmailJS
+    emailjs.init("nD3vb8Aa24yTu0DAz");
+    
+    const fields = ["customer-email", "customer-name", "name", "age", "pronouns", "traits", "genre", "special-requests", "deadline"];
+    
+    fields.forEach(field => {
+      const element = document.getElementById(field);
+      element.addEventListener("input", () => {
+        const value = element.value || "—";
+        const previewElement = document.getElementById(`preview-${field}`);
+        if (previewElement) {
+          previewElement.textContent = value;
+        }
+      });
+    });
+
+    function generateSong() {
+      // Get form values
+      const customerEmail = document.getElementById("customer-email").value.trim();
+      const customerName = document.getElementById("customer-name").value.trim();
+      const name = document.getElementById("name").value.trim();
+      const age = document.getElementById("age").value;
+      const pronouns = document.getElementById("pronouns").value.trim();
+      const traits = document.getElementById("traits").value.trim();
+      const genre = document.getElementById("genre").value.trim();
+      const specialRequests = document.getElementById("special-requests").value.trim();
+      const deadline = document.getElementById("deadline").value;
+
+      // Validate required fields
+      if (!customerEmail) {
+        showError("Please enter your email address");
+        return;
+      }
+      
+      if (!name) {
+        showError("Please enter the recipient's name");
+        return;
+      }
+
+      // Disable button and show loading
+      const btn = document.getElementById("generate-btn");
+      btn.disabled = true;
+      btn.textContent = "🎵 Sending Request...";
+
+      // Prepare email data for EmailJS
+      const emailData = {
+        customer_email: customerEmail,
+        customer_name: customerName || "Not provided",
+        recipient_name: name,
+        recipient_age: age || "Not provided",
+        pronouns: pronouns || "Not provided",
+        traits: traits || "Not provided",
+        genre: genre || "Not provided",
+        special_requests: specialRequests || "None",
+        deadline: deadline || "No deadline specified",
+        timestamp: new Date().toLocaleString()
+      };
+
+      // Send email via EmailJS
+      sendEmailViaService(emailData)
+        .then(() => {
+          showSuccess("Request sent successfully! We'll be in touch soon.");
+          clearForm();
+        })
+        .catch((error) => {
+          console.error('EmailJS error:', error);
+          showError("Failed to send request. Please try again or contact us directly.");
+        })
+        .finally(() => {
+          // Re-enable button
+          btn.disabled = false;
+          btn.textContent = "🎤 Generate Song";
+        });
+    }
+
+    // EmailJS function
+    function sendEmailViaService(data) {
+      return emailjs.send(
+        "service_xopurjr",    // Your EmailJS service ID
+        "template_cxwfx9a",   // Your EmailJS template ID
+        data
+      );
+    }
+
+    function showSuccess(message) {
+      const successDiv = document.getElementById("success-msg");
+      const errorDiv = document.getElementById("error-msg");
+      errorDiv.style.display = "none";
+      successDiv.textContent = message;
+      successDiv.style.display = "block";
+    }
+
+    function showError(message) {
+      const errorDiv = document.getElementById("error-msg");
+      const successDiv = document.getElementById("success-msg");
+      successDiv.style.display = "none";
+      errorDiv.textContent = message;
+      errorDiv.style.display = "block";
+    }
+
+    function clearForm() {
+      fields.forEach(field => {
+        const element = document.getElementById(field);
+        if (element) {
+          element.value = "";
+          const previewElement = document.getElementById(`preview-${field}`);
+          if (previewElement) {
+            previewElement.textContent = "—";
+          }
+        }
+      });
+      document.getElementById("song-output").textContent = "";
+    }
+  </script>
+</body>
+</html>
